@@ -45,8 +45,6 @@ networks:
 Para definir las variables de entorno haga una copia del archivo .env.example y asigne valores a cada una de las variables.
 
 Para esta configuración se utilizaron las siguientes variables de entorno:
-- POSTGRES_USER: Esta variable de entorno nos sirve para ....
-- POSTGRES_PASSWORD
 - MARIADB_USER: Usuario que va a tener la base de datos.
 - MARIADB_PASSWORD: Contraseña que va a tener la base de datos.
 - MARIADB_ROOT_PASSWORD: Contraseña del usuario ROOT que va a tener la base de datos.
@@ -81,7 +79,7 @@ docker-compose ps
 ![alt text](image-2.png)
 
 
-# conexión con el cliente
+# Conexión con el cliente
 Si esta en virtualbox, puede configurar el reenvio de puertos de la siguiente manera:
 
 Para que este ajuste funcione se tiene que habilitar los puertos mencionados anteriormente y que se puede visualizar en la imagen atravez del utilitario UFW.
@@ -91,12 +89,12 @@ Para que este ajuste funcione se tiene que habilitar los puertos mencionados ant
 En la imagen se evidencia la correcta configuración para el reenvio de puertos entre el host y la maquina
 virtual.
 
-abrir el navegador en el puerto configurado e inicie sesión.
+Abrir el navegador en el puerto configurado e inicie sesión.
 ![alt text](image-4.png)
 
-realice la conexión al servidor utilizando el nombre del contenedor, username, password y nombre de la base de datos configurados en las variables de entorno.
+Realice la conexión al servidor utilizando el nombre del contenedor, username, password y nombre de la base de datos configurados en las variables de entorno.
 
-conexión exitosa a la base de datos
+Conexión exitosa a la base de datos
 
 ![alt text](image-5.png)
 

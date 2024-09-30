@@ -1,6 +1,6 @@
-Autor: Cristhian Fernando Moreno Manrique
+Autor: Kevin Andres Arias Fragozo
 
-Objetivo: Implementar cliente phpMyadmin conectado con Base de datos MariaDb utilizando docker compose
+Objetivo: Implementar cliente mongo-express conectado con Base de datos Mongo utilizando docker compose
 
 # Configuración del docker-compose.yml
 
@@ -8,78 +8,96 @@ Objetivo: Implementar cliente phpMyadmin conectado con Base de datos MariaDb uti
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: my_postgres_db
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  mongodb:
+    image: mongo:4.4
+    container_name: my-mongo-container
     ports:
-      - "5432:5432"
+      - "27017:27017"
     networks:
-      - postgres-network
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: my_pgdamin4
-    ports:
-      - "8080:80"
+      - mongo_network
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - mongo_data:/data/db
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    env_file:
-      - .env
-    networks:
-      - postgres-network
+       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 
-volumes:
-  postgres_data:
-  pgadmin-data:
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-container
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "8081:8081"
+    networks:
+      - mongo_network
 
 networks:
-  postgres-network:
+  mongo_network:
+
+volumes:
+  mongo_data:
 ```
-Para definir las variables de entorno haga una copia del archivo .env.template y asigne valores a cada una de las variables.
+Para definir las variables de entorno haga una copia del archivo .env.example y asigne valores a cada una de las variables.
 
 Para esta configuración se utilizaron las siguientes variables de entorno:
-- POSTGRES_USER: Esta variable de entorno nos sirve para ....
-- POSTGRES_PASSWORD
+- MONGO_INITDB_ROOT_USERNAME: Usuario ROOT de mi mongodb
+- MONGO_INITDB_ROOT_PASSWORD: Password ROOT de mi mongodb
+- ME_CONFIG_MONGODB_SERVER: Nombre del servidor a utilizar
+- ME_CONFIG_MONGODB_PORT: Puerto de mi mongodb
+- ME_CONFIG_MONGODB_ADMINUSERNAME: Usuario ROOT de mi mongodb para mongoExpress 
+- ME_CONFIG_MONGODB_ADMINPASSWORD: Password ROOT de mi mongodb para mongoExpress
 
-Se configuro la red postgres-network para conectar los sevicios de postgres y pgadmin.
 
-volumenes
-puertos.
-se agrego el parametro env_file para leer las variables de entorno del archivo .env.
+Se configuro la red:
+-  mongo_network para conectar los sevicios de mongoExpress y mongodb.
+
+Se configuro el volumes: 
+- mongo_data para la persistencia de datos
+
+Se configuraron los puertos.
+
+Para mongo-express.
+ - "8081:8081" 
+
+Para mongodb.
+- "27017:27017"
+
+Se agrego el parametro env_file para leer las variables de entorno del archivo .env.
 
 # Como implementar el proyecto
 ejecute el siguiente comando para implementar los servicios
 ```shell
 docker-compose up -d
 ```
+![alt text](image-1.png)
 
 verifique que los contenedores esten en ejecucion
 ```
 docker-compose ps
 ```
+
 ![alt text](image-2.png)
 
-# conexión con el cliente
+
+# Conexión con el cliente
 Si esta en virtualbox, puede configurar el reenvio de puertos de la siguiente manera:
 
-![alt text](image.png)
+Para que este ajuste funcione se tiene que habilitar los puertos mencionados anteriormente y que se puede visualizar en la imagen atravez del utilitario UFW.
 
-detalles de la imagen...
+![alt text](image-3.png)
 
-abrir el navegador en el puerto configurado e inicie sesión.
-![alt text](image-1.png)
+En la imagen se evidencia la correcta configuración para el reenvio de puertos entre el host y la maquina
+virtual.
 
+Abrir el navegador en el puerto configurado e inicie sesión.
+![alt text](image-4.png)
 
-... 
-...
-...
+Realice la conexión al servidor utilizando el nombre del contenedor, username, password configurados en las variables de entorno.
 
-realice la conexión al servidor de la siguiente manera
+Conexión exitosa a la base de datos
+
+![alt text](image-5.png)
+
